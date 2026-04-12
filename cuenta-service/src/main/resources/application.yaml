@@ -13,8 +13,8 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
 
-    server:
-      port: 8082
+server:
+  port: 8082
 
 #  datasource:
 #    url: jdbc:h2:mem:cuentadb
