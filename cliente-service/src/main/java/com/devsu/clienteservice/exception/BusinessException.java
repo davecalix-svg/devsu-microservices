@@ -1,5 +1,6 @@
-package com.devsu.cuentaservice.exception;
+package com.devsu.clienteservice.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 public class BusinessException extends RuntimeException {

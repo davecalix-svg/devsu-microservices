@@ -6,10 +6,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class CuentaReporteDTO {
+public class ReporteCuentaDTO {
 
     private String numeroCuenta;
     private String tipoCuenta;
     private BigDecimal saldo;
-    private List<MovimientoReporteDTO> movimientos;
+    private List<ReporteMovimientoDTO> movimientos;
 }

@@ -1,10 +1,11 @@
 package com.devsu.cuentaservice.service;
 
-import com.devsu.cuentaservice.dto.CuentaReporteDTO;
-import com.devsu.cuentaservice.dto.MovimientoReporteDTO;
+import com.devsu.cuentaservice.dto.ReporteCuentaDTO;
+import com.devsu.cuentaservice.dto.ReporteMovimientoDTO;
 import com.devsu.cuentaservice.dto.ReporteResponseDTO;
 import com.devsu.cuentaservice.entity.Cuenta;
 import com.devsu.cuentaservice.entity.Movimiento;
+import com.devsu.cuentaservice.external.ClienteClient;
 import com.devsu.cuentaservice.repository.CuentaRepository;
 import com.devsu.cuentaservice.repository.MovimientoRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,16 @@ public class ReporteServiceImpl implements ReporteService {
 
     private final CuentaRepository cuentaRepository;
     private final MovimientoRepository movimientoRepository;
+    private final ClienteClient clienteClient;
 
     @Override
     public ReporteResponseDTO generarReporte(Long clienteId, LocalDate fecha) {
 
+        String nombreCliente = clienteClient.obtenerNombreCliente(clienteId);
+
         List<Cuenta> cuentas = cuentaRepository.findByClienteId(clienteId);
 
-        List<CuentaReporteDTO> cuentasDTO = cuentas.stream().map(cuenta -> {
+        List<ReporteCuentaDTO> cuentasDTO = cuentas.stream().map(cuenta -> {
 
             // rango del día
             LocalDateTime inicio = fecha.atStartOfDay();
@@ -35,9 +39,9 @@ public class ReporteServiceImpl implements ReporteService {
             List<Movimiento> movimientos = movimientoRepository
                     .findByCuentaAndFechaBetween(cuenta, inicio, fin);
 
-            List<MovimientoReporteDTO> movimientosDTO = movimientos.stream().map(m -> {
+            List<ReporteMovimientoDTO> movimientosDTO = movimientos.stream().map(m -> {
 
-                MovimientoReporteDTO dto = new MovimientoReporteDTO();
+                ReporteMovimientoDTO dto = new ReporteMovimientoDTO();
                 dto.setFecha(m.getFecha());
                 dto.setTipoMovimiento(m.getTipoMovimiento().name());
                 dto.setValor(m.getValor());
@@ -45,7 +49,7 @@ public class ReporteServiceImpl implements ReporteService {
                 return dto;
             }).toList();
 
-            CuentaReporteDTO cuentaDTO = new CuentaReporteDTO();
+            ReporteCuentaDTO cuentaDTO = new ReporteCuentaDTO();
             cuentaDTO.setNumeroCuenta(cuenta.getNumeroCuenta());
             cuentaDTO.setTipoCuenta(cuenta.getTipoCuenta());
             cuentaDTO.setSaldo(
@@ -60,7 +64,7 @@ public class ReporteServiceImpl implements ReporteService {
         }).toList();
 
         ReporteResponseDTO response = new ReporteResponseDTO();
-        response.setClienteId(clienteId);
+        response.setNombreCliente(nombreCliente);
         response.setCuentas(cuentasDTO);
 
         return response;

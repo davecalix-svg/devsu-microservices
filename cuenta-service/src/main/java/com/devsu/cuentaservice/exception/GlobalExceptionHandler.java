@@ -13,20 +13,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<?> handleBusinessException(BusinessException ex) {
-        return ResponseEntity.badRequest().body(
+        return ResponseEntity.status(ex.getStatus()).body(
                 Map.of(
                         "timestamp", LocalDateTime.now(),
+                        "status", ex.getStatus().value(),
                         "error", ex.getMessage()
                 )
         );
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor");
+    }
+
+    private ResponseEntity<?> buildResponse(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(
                 Map.of(
                         "timestamp", LocalDateTime.now(),
-                        "error", "Error interno del servidor"
+                        "status", status.value(),
+                        "error", message
                 )
         );
     }

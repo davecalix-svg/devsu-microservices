@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class MovimientoReporteDTO {
+public class ReporteMovimientoDTO {
 
     private LocalDateTime fecha;
     private String tipoMovimiento;

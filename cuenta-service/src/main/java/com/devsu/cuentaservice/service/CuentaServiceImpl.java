@@ -5,8 +5,10 @@ import com.devsu.cuentaservice.dto.CuentaResponseDTO;
 import com.devsu.cuentaservice.entity.Cuenta;
 import com.devsu.cuentaservice.exception.BusinessException;
 import com.devsu.cuentaservice.mapper.CuentaMapper;
+import com.devsu.cuentaservice.repository.ClienteRefRepository;
 import com.devsu.cuentaservice.repository.CuentaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +18,20 @@ import java.util.List;
 public class CuentaServiceImpl implements CuentaService {
 
     private final CuentaRepository cuentaRepository;
+    private final ClienteRefRepository clienteRefRepository;
     private final CuentaMapper cuentaMapper;
+
 
     @Override
     public CuentaResponseDTO crear(CuentaRequestDTO request) {
+
+        if (!clienteRefRepository.existsById(request.getClienteId())) {
+            throw new BusinessException("Cliente no existe", HttpStatus.NOT_FOUND);
+        }
+
         // Validar duplicado
         if (cuentaRepository.existsByNumeroCuenta(request.getNumeroCuenta())) {
-            throw new BusinessException("Ya existe una cuenta con ese número");
+            throw new BusinessException("Ya existe una cuenta con ese número", HttpStatus.CONFLICT);
         }
 
         // Mapear DTO → Entity
@@ -46,20 +55,25 @@ public class CuentaServiceImpl implements CuentaService {
     @Override
     public CuentaResponseDTO obtenerPorId(Long id) {
         Cuenta cuenta = cuentaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cuenta no encontrada"));
+                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
 
         return cuentaMapper.toResponseDTO(cuenta);
     }
 
     @Override
     public CuentaResponseDTO actualizar(Long id, CuentaRequestDTO request) {
+
         Cuenta cuenta = cuentaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cuenta no encontrada"));
+                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
+
+        if (!clienteRefRepository.existsById(request.getClienteId())) {
+            throw new BusinessException("Cliente no existe", HttpStatus.NOT_FOUND);
+        }
 
         // Validar cambio de número de cuenta
         if (!cuenta.getNumeroCuenta().equals(request.getNumeroCuenta()) &&
                 cuentaRepository.existsByNumeroCuenta(request.getNumeroCuenta())) {
-            throw new BusinessException("Ya existe una cuenta con ese número");
+            throw new BusinessException("Ya existe una cuenta con ese número", HttpStatus.CONFLICT);
         }
 
         // Actualizar campos (NO reemplazar entidad completa)

@@ -11,6 +11,7 @@ import com.devsu.cuentaservice.repository.CuentaRepository;
 import com.devsu.cuentaservice.repository.MovimientoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
         // 1. Obtener cuenta
         Cuenta cuenta = cuentaRepository.findById(request.getCuentaId())
-                .orElseThrow(() -> new BusinessException("Cuenta no encontrada"));
+                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
 
         // 2. Obtener saldo actual
         BigDecimal saldoActual = obtenerSaldoActual(cuenta);
@@ -42,7 +43,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
         // 4. Validar saldo
         if (nuevoSaldo.compareTo(BigDecimal.ZERO) < 0) {
-            throw new BusinessException("Saldo no disponible");
+            throw new BusinessException("Saldo no disponible", HttpStatus.CONFLICT);
         }
 
         // 5. Crear movimiento
@@ -86,7 +87,7 @@ public class MovimientoServiceImpl implements MovimientoService {
     @Override
     public MovimientoResponseDTO obtenerPorId(Long id) {
         Movimiento movimiento = movimientoRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Movimiento no encontrado"));
+                .orElseThrow(() -> new BusinessException("Movimiento no encontrado", HttpStatus.NOT_FOUND));
 
         return movimientoMapper.toResponseDTO(movimiento);
     }
