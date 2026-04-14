@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: cuenta-service
+
+  datasource:
+    url: jdbc:mysql://db:3306/devsu?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+  rabbitmq:
+    host: rabbitmq   # nombre del servicio en docker-compose
+    port: 5672
+    username: guest
+    password: guest
+
+cliente:
+  service:
+    url: http://cliente-service:8081
+
+server:
+  port: 8082

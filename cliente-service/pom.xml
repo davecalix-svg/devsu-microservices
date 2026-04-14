@@ -15,7 +15,7 @@
 
     <groupId>com.devsu</groupId>
     <artifactId>cliente-service</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -30,11 +30,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>3.2.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
 
         <dependency>
@@ -86,7 +81,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>2.2.224</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
 
         <!-- OpenAPI/Swagger -->
@@ -106,6 +101,7 @@
     </dependencies>
 
     <build>
+        <finalName>cliente-service</finalName>
         <plugins>
             <!-- Spring Boot plugin -->
             <plugin>

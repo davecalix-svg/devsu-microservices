@@ -3,6 +3,7 @@ package com.devsu.cuentaservice.external;
 import com.devsu.cuentaservice.dto.ClienteResponseDTO;
 import com.devsu.cuentaservice.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,10 @@ public class ClienteClient {
 
     private final WebClient webClient;
 
-    public ClienteClient(WebClient webClient) {
-        this.webClient = webClient;
+    public ClienteClient(WebClient.Builder webClientBuilder, @Value("${cliente.service.url}") String baseUrl) {
+        this.webClient = webClientBuilder
+                .baseUrl(baseUrl)
+                .build();
     }
 
     public String obtenerNombreCliente(Long clienteId) {

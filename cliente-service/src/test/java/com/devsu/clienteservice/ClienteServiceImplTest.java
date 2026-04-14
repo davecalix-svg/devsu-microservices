@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@ActiveProfiles("test")
 public class ClienteServiceImplTest {
 
     @Mock

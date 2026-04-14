@@ -1,0 +1,39 @@
+services:
+  cliente-service:
+    build: ./cliente-service
+    container_name: cliente-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+      - rabbitmq
+
+  cuenta-service:
+    build: ./cuenta-service
+    container_name: cuenta-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+      - rabbitmq
+
+  db:
+    image: mysql:8.0
+    container_name: devsu-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devsu
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # puerto para comunicación AMQP
+      - "15672:15672" # puerto para consola web de RabbitMQ
+
+volumes:
+  mysql_data:
