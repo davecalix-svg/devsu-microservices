@@ -1,0 +1,367 @@
+{
+  "info": {
+    "_postman_id": "79c71bdf-a493-4cfd-99d5-3d3af6ba89d7",
+    "name": "Devsu",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "983437"
+  },
+  "item": [
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Alba Gomez\",\r\n    \"genero\": \"F\",\r\n    \"edad\": 41,\r\n    \"identificacion\": \"1703198400405\",\r\n    \"direccion\": \"Residencial Las Cascadas, Tegucigalpa\",\r\n    \"telefono\": \"99472293\",\r\n    \"contrasena\": \"Cont475!@\",\r\n    \"estado\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{clientes_port}}{{clientes_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{clientes_port}}{{clientes_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{clientes_port}}{{clientes_path}}/1",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{clientes_port}}{{clientes_path}}",
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAll",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{clientes_port}}{{clientes_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{clientes_port}}{{clientes_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{clientes_port}}{{clientes_path}}/1",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{clientes_port}}{{clientes_path}}",
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Alba Carolina Gomez Calix\",\r\n    \"genero\": \"F\",\r\n    \"edad\": 40,\r\n    \"identificacion\": \"1703198400405\",\r\n    \"direccion\": \"Tegucigalpa\",\r\n    \"telefono\": \"99472293\",\r\n    \"contrasena\": \"Caracol\",\r\n    \"estado\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{clientes_port}}{{clientes_path}}/1",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{clientes_port}}{{clientes_path}}",
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"David Guzman\",\r\n    \"genero\": \"M\",\r\n    \"edad\": 42\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/clientes/5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "clientes",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"numeroCuenta\": \"557484985\",\r\n    \"tipoCuenta\": \"CORRIENTE\",\r\n    \"saldoInicial\": 1900,\r\n    \"estado\": true,\r\n    \"clienteId\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{cuentas_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{cuentas_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAll",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{cuentas_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{cuentas_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{cuentas_path}}/1",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{cuentas_path}}",
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"numeroCuenta\": \"557484985\",\r\n    \"tipoCuenta\": \"AHORROS\",\r\n    \"saldoInicial\": 1900,\r\n    \"estado\": true,\r\n    \"clienteId\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{cuentas_path}}/1",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{cuentas_path}}",
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Movimientos",
+      "item": [
+        {
+          "name": "Create(CREDIT)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"cuentaId\": 7,\r\n    \"valor\": 5600\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{movimientos_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{movimientos_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create(DEBIT)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"cuentaId\": 7,\r\n    \"valor\": 7460\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{movimientos_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{movimientos_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAll",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{movimientos_path}}",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{movimientos_path}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{movimientos_path}}/1",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{movimientos_path}}",
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Generate",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{host}}:{{cuentas_port}}{{reportes_path}}?cliente=5&fecha=2026-04-14",
+              "protocol": "http",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{cuentas_port}}{{reportes_path}}",
+              "query": [
+                {
+                  "key": "cliente",
+                  "value": "5"
+                },
+                {
+                  "key": "fecha",
+                  "value": "2026-04-14"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
