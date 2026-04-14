@@ -11,8 +11,7 @@ import com.devsu.cuentaservice.repository.MovimientoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 
 @Service
@@ -33,11 +32,17 @@ public class ReporteServiceImpl implements ReporteService {
         List<ReporteCuentaDTO> cuentasDTO = cuentas.stream().map(cuenta -> {
 
             // rango del día
-            LocalDateTime inicio = fecha.atStartOfDay();
-            LocalDateTime fin = fecha.atTime(23, 59, 59);
+
+            ZoneId zone = ZoneId.systemDefault(); // o America/Mexico_City
+
+            ZonedDateTime inicioLocal = fecha.atStartOfDay(zone);
+            ZonedDateTime finLocal = fecha.atTime(23, 59, 59).atZone(zone);
+
+            LocalDateTime inicioUTC = inicioLocal.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+            LocalDateTime finUTC = finLocal.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
 
             List<Movimiento> movimientos = movimientoRepository
-                    .findByCuentaAndFechaBetween(cuenta, inicio, fin);
+                    .findByCuentaAndFechaBetween(cuenta, inicioUTC, finUTC);
 
             List<ReporteMovimientoDTO> movimientosDTO = movimientos.stream().map(m -> {
 
@@ -64,6 +69,7 @@ public class ReporteServiceImpl implements ReporteService {
         }).toList();
 
         ReporteResponseDTO response = new ReporteResponseDTO();
+        response.setClienteId(clienteId);
         response.setNombreCliente(nombreCliente);
         response.setCuentas(cuentasDTO);
 

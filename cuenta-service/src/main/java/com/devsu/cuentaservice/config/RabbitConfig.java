@@ -13,18 +13,18 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 public class RabbitConfig {
 
-    public static final String EXCHANGE = "cliente.exchange";
-    public static final String QUEUE = "cliente.creado.queue";
+    public static final String EXCHANGE_NAME = "cliente.exchange";
+    public static final String QUEUE_NAME = "cliente.creado.queue";
     public static final String ROUTING_KEY = "cliente.creado";
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE);
+        return new TopicExchange(EXCHANGE_NAME);
     }
 
     @Bean
     public Queue queue() {
-        return new Queue(QUEUE);
+        return new Queue(QUEUE_NAME, true);
     }
 
     @Bean

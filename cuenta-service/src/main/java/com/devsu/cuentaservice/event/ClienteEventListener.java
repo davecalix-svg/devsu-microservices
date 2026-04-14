@@ -15,7 +15,7 @@ public class ClienteEventListener {
         this.repository = repository;
     }
 
-    @RabbitListener(queues = RabbitConfig.QUEUE)
+    @RabbitListener(queues = RabbitConfig.QUEUE_NAME)
     public void handleClienteCreado(ClienteCreadoEvent event){
 
         ClienteRef ref = new ClienteRef();

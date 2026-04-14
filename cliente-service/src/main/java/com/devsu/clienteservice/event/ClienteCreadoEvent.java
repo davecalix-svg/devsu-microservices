@@ -1,5 +1,10 @@
 package com.devsu.clienteservice.event;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class ClienteCreadoEvent {
 
     private Long clienteId;
@@ -9,11 +14,4 @@ public class ClienteCreadoEvent {
         this.clienteId = clienteId;
     }
 
-    public Long getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
-    }
 }
