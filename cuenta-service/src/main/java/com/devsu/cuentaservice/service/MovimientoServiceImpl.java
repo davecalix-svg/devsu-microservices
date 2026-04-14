@@ -31,40 +31,53 @@ public class MovimientoServiceImpl implements MovimientoService {
     @Transactional
     public MovimientoResponseDTO registrarMovimiento(MovimientoRequestDTO request) {
 
-        // 1. Obtener cuenta
-        Cuenta cuenta = cuentaRepository.findById(request.getCuentaId())
-                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
+        Cuenta cuenta = obtenerCuenta(request.getCuentaId());
 
-        // 2. Obtener saldo actual
         BigDecimal saldoActual = obtenerSaldoActual(cuenta);
+        BigDecimal nuevoSaldo = calcularNuevoSaldo(saldoActual, request.getValor());
 
-        // 3. Calcular nuevo saldo
-        BigDecimal nuevoSaldo = saldoActual.add(request.getValor());
+        validarSaldo(nuevoSaldo);
 
-        // 4. Validar saldo
+        Movimiento movimiento = crearMovimiento(request, cuenta, nuevoSaldo);
+
+        Movimiento saved = movimientoRepository.save(movimiento);
+
+        return mapearRespuesta(saved); // 🔥 IMPORTANTE: mantener mapping manual
+    }
+
+    private Cuenta obtenerCuenta(Long cuentaId) {
+        return cuentaRepository.findById(cuentaId)
+                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
+    }
+
+    private BigDecimal calcularNuevoSaldo(BigDecimal saldoActual, BigDecimal valor) {
+        return saldoActual.add(valor);
+    }
+
+    private void validarSaldo(BigDecimal nuevoSaldo) {
+        // Regla de negocio (F3): no permitir saldo negativo
         if (nuevoSaldo.compareTo(BigDecimal.ZERO) < 0) {
             throw new BusinessException("Saldo no disponible", HttpStatus.CONFLICT);
         }
+    }
 
-        // 5. Crear movimiento
+    private Movimiento crearMovimiento(MovimientoRequestDTO request, Cuenta cuenta, BigDecimal nuevoSaldo) {
         Movimiento movimiento = new Movimiento();
         movimiento.setFecha(LocalDateTime.now());
         movimiento.setValor(request.getValor());
         movimiento.setSaldo(nuevoSaldo);
         movimiento.setCuenta(cuenta);
         movimiento.setTipoMovimiento(TipoMovimiento.fromValor(request.getValor()));
+        return movimiento;
+    }
 
-        // 6. Guardar
-        Movimiento saved = movimientoRepository.save(movimiento);
-
-        // 7. Mapear respuesta (manual simple)
+    private MovimientoResponseDTO mapearRespuesta(Movimiento saved) {
         MovimientoResponseDTO response = new MovimientoResponseDTO();
         response.setId(saved.getId());
         response.setFecha(saved.getFecha());
         response.setValor(saved.getValor());
         response.setSaldo(saved.getSaldo());
         response.setTipoMovimiento(saved.getTipoMovimiento().name());
-
         return response;
     }
 
@@ -73,7 +86,7 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .findTopByCuentaOrderByFechaDesc(cuenta)
                 .map(Movimiento::getSaldo)
                 .orElse(Optional.ofNullable(cuenta.getSaldoInicial())
-                        .orElse(BigDecimal.ZERO));
+                        .orElse(BigDecimal.ZERO)); // 🔥 NO tocar lógica original
     }
 
     @Override

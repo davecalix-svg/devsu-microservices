@@ -15,29 +15,38 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Clientes", description = "Operaciones sobre clientes")
 @RestController
 @RequestMapping("/api/v1/clientes")
 @RequiredArgsConstructor
+@Tag(name = "Clientes", description = "Operaciones sobre clientes")
 public class ClienteController {
 
     private final ClienteService clienteService;
 
     @Operation(summary = "Crear cliente")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente creado correctamente"),
+            @ApiResponse(responseCode = "201", description = "Cliente creado correctamente"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos")
     })
     @PostMapping
-    public ClienteResponseDTO crear(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
-        return clienteService.crear(clienteRequestDTO);
+    public ResponseEntity<ClienteResponseDTO> crear(
+            @Valid @RequestBody ClienteRequestDTO request) {
+
+        ClienteResponseDTO response = clienteService.crear(request);
+
+        return ResponseEntity
+                .status(201)
+                .body(response);
     }
 
     @Operation(summary = "Listar todos los clientes")
     @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida correctamente")
     @GetMapping
-    public List<ClienteResponseDTO> listar() {
-        return clienteService.listar();
+    public ResponseEntity<List<ClienteResponseDTO>> listar() {
+
+        List<ClienteResponseDTO> response = clienteService.listar();
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Obtener cliente por ID")
@@ -46,11 +55,13 @@ public class ClienteController {
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     @GetMapping("/{id}")
-    public ClienteResponseDTO obtener(
+    public ResponseEntity<ClienteResponseDTO> obtener(
             @Parameter(description = "ID del cliente", example = "1")
-            @PathVariable Long id
-    ) {
-        return clienteService.obtenerPorId(id);
+            @PathVariable Long id) {
+
+        ClienteResponseDTO response = clienteService.obtenerPorId(id);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Actualizar cliente completamente (PUT)")
@@ -63,9 +74,11 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDTO> actualizar(
             @Parameter(description = "ID del cliente", example = "1")
             @PathVariable Long id,
-            @Valid @RequestBody ClienteRequestDTO clienteRequestDTO
-    ) {
-        return ResponseEntity.ok(clienteService.actualizar(id, clienteRequestDTO));
+            @Valid @RequestBody ClienteRequestDTO request) {
+
+        ClienteResponseDTO response = clienteService.actualizar(id, request);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Actualizar parcialmente un cliente (PATCH)")
@@ -78,22 +91,25 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDTO> actualizarParcial(
             @Parameter(description = "ID del cliente", example = "1")
             @PathVariable Long id,
-            @RequestBody ClienteRequestDTO clienteRequestDTO
-    ) {
-        return ResponseEntity.ok(clienteService.actualizarParcial(id, clienteRequestDTO));
+            @Valid @RequestBody ClienteRequestDTO request) {
+
+        ClienteResponseDTO response = clienteService.actualizarParcial(id, request);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Eliminar cliente por ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente eliminado correctamente"),
+            @ApiResponse(responseCode = "204", description = "Cliente eliminado correctamente"),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del cliente", example = "1")
-            @PathVariable Long id
-    ) {
+            @PathVariable Long id) {
+
         clienteService.eliminar(id);
+
         return ResponseEntity.noContent().build();
     }
 }

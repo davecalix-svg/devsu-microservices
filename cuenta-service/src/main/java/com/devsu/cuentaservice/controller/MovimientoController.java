@@ -23,22 +23,28 @@ public class MovimientoController {
 
     @Operation(summary = "Registrar movimiento (débito/crédito)")
     @PostMapping
-    public ResponseEntity<MovimientoResponseDTO> crearMovimiento(
+    public ResponseEntity<MovimientoResponseDTO> crear(
             @Valid @RequestBody MovimientoRequestDTO request) {
 
         MovimientoResponseDTO response = movimientoService.registrarMovimiento(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @Operation(summary = "Listar movimientos")
     @GetMapping
-    public ResponseEntity<List<MovimientoResponseDTO>> listarMovimientos() {
-        return ResponseEntity.ok(movimientoService.listar());
+    public ResponseEntity<List<MovimientoResponseDTO>> listar() {
+
+        List<MovimientoResponseDTO> response = movimientoService.listar();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Obtener movimiento por ID")
     @GetMapping("/{id}")
-    public ResponseEntity<MovimientoResponseDTO> obtenerMovimiento(@PathVariable Long id) {
-        return ResponseEntity.ok(movimientoService.obtenerPorId(id));
+    public ResponseEntity<MovimientoResponseDTO> obtener(@PathVariable Long id) {
+
+        MovimientoResponseDTO response = movimientoService.obtenerPorId(id);
+        return ResponseEntity.ok(response);
     }
 }

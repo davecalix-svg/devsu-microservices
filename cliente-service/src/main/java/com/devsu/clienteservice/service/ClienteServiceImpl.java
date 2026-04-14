@@ -19,44 +19,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClienteServiceImpl implements ClienteService {
 
-    private final ClienteRepository repository;
+    private final ClienteRepository clienteRepository;
     private final ClienteMapper mapper;
     private final RabbitTemplate rabbitTemplate;
 
     @Override
-    public ClienteResponseDTO crear(ClienteRequestDTO clienteRequestDTO) {
+    public ClienteResponseDTO crear(ClienteRequestDTO dto) {
 
-        if (repository.existsByIdentificacion(clienteRequestDTO.getIdentificacion())) {
-            throw new BusinessException(
-                    "Ya existe un cliente con esa identificación",
-                    HttpStatus.CONFLICT
-            );
-        }
+        validarIdentificacionUnica(dto.getIdentificacion());
 
-        Cliente cliente = mapper.toEntity(clienteRequestDTO);
-        Cliente guardado = repository.save(cliente);
+        Cliente cliente = mapper.toEntity(dto);
+        Cliente guardado = clienteRepository.save(cliente);
 
-        ClienteCreadoEvent event = new ClienteCreadoEvent(guardado.getClienteId());
-
-        rabbitTemplate.convertAndSend(
-                RabbitConfig.EXCHANGE,
-                RabbitConfig.ROUTING_KEY,
-                event
-        );
+        publicarEventoClienteCreado(guardado);
 
         return mapper.toDTO(guardado);
     }
 
     @Override
     public ClienteResponseDTO obtenerPorId(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDTO)
-                .orElseThrow(() -> new BusinessException("Cliente no encontrado", HttpStatus.NOT_FOUND));
+        Cliente cliente = obtenerCliente(id);
+        return mapper.toDTO(cliente);
     }
 
     @Override
     public List<ClienteResponseDTO> listar() {
-        return repository.findAll()
+        return clienteRepository.findAll()
                 .stream()
                 .map(mapper::toDTO)
                 .toList();
@@ -64,39 +52,79 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponseDTO actualizar(Long id, ClienteRequestDTO dto) {
-        Cliente existente = repository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cliente no encontrado", HttpStatus.NOT_FOUND));
 
-        if (!existente.getEstado()) {
-            throw new BusinessException("Cliente inactivo", HttpStatus.BAD_REQUEST);
-        }
+        Cliente cliente = obtenerCliente(id);
 
-        if (!existente.getIdentificacion().equals(dto.getIdentificacion()) &&
-                repository.existsByIdentificacion(dto.getIdentificacion())) {
+        validarClienteActivo(cliente);
+        validarIdentificacionUnicaEnActualizacion(cliente, dto.getIdentificacion());
 
-            throw new BusinessException(
-                    "Ya existe un cliente con esa identificación",
-                    HttpStatus.CONFLICT
-            );
-        }
+        mapper.updateFromDto(dto, cliente);
 
-        mapper.updateFromDto(dto, existente);
+        Cliente actualizado = clienteRepository.save(cliente);
 
-        return mapper.toDTO(repository.save(existente));
+        return mapper.toDTO(actualizado);
     }
 
+    @Override
     public ClienteResponseDTO actualizarParcial(Long id, ClienteRequestDTO dto) {
-        Cliente cliente = repository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cliente no encontrado", HttpStatus.NOT_FOUND));
+
+        Cliente cliente = obtenerCliente(id);
+
         mapper.updateFromDto(dto, cliente);
-        Cliente actualizado = repository.save(cliente);
+
+        Cliente actualizado = clienteRepository.save(cliente);
+
         return mapper.toDTO(actualizado);
     }
 
     @Override
     public void eliminar(Long id) {
-        Cliente cliente = repository.findById(id)
+        Cliente cliente = obtenerCliente(id);
+        clienteRepository.delete(cliente);
+    }
+
+    // =========================
+    // Métodos privados
+    // =========================
+
+    private Cliente obtenerCliente(Long id) {
+        return clienteRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Cliente no encontrado", HttpStatus.NOT_FOUND));
-        repository.delete(cliente);
+    }
+
+    private void validarClienteActivo(Cliente cliente) {
+        if (!cliente.getEstado()) {
+            throw new BusinessException("Cliente inactivo", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validarIdentificacionUnica(String identificacion) {
+        if (clienteRepository.existsByIdentificacion(identificacion)) {
+            throw new BusinessException(
+                    "Ya existe un cliente con esa identificación",
+                    HttpStatus.CONFLICT
+            );
+        }
+    }
+
+    private void validarIdentificacionUnicaEnActualizacion(Cliente cliente, String identificacion) {
+        boolean cambiaIdentificacion = !cliente.getIdentificacion().equals(identificacion);
+
+        if (cambiaIdentificacion && clienteRepository.existsByIdentificacion(identificacion)) {
+            throw new BusinessException(
+                    "Ya existe un cliente con esa identificación",
+                    HttpStatus.CONFLICT
+            );
+        }
+    }
+
+    private void publicarEventoClienteCreado(Cliente cliente) {
+        ClienteCreadoEvent event = new ClienteCreadoEvent(cliente.getClienteId());
+
+        rabbitTemplate.convertAndSend(
+                RabbitConfig.EXCHANGE,
+                RabbitConfig.ROUTING_KEY,
+                event
+        );
     }
 }

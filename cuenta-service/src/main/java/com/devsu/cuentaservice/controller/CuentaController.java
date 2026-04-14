@@ -23,37 +23,38 @@ public class CuentaController {
 
     @Operation(summary = "Crear una cuenta")
     @PostMapping
-    public ResponseEntity<CuentaResponseDTO> crearCuenta(
+    public ResponseEntity<CuentaResponseDTO> crear(
             @Valid @RequestBody CuentaRequestDTO request) {
 
+        CuentaResponseDTO response = cuentaService.crear(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(cuentaService.crear(request));
+                .body(response);
     }
 
     @Operation(summary = "Listar cuentas")
     @GetMapping
-    public ResponseEntity<List<CuentaResponseDTO>> listarCuentas() {
-        return ResponseEntity.ok(cuentaService.listar());
+    public ResponseEntity<List<CuentaResponseDTO>> listar() {
+
+        List<CuentaResponseDTO> response = cuentaService.listar();
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Obtener cuenta por ID")
     @GetMapping("/{id}")
-    public ResponseEntity<CuentaResponseDTO> obtenerCuenta(@PathVariable Long id) {
-        return ResponseEntity.ok(cuentaService.obtenerPorId(id));
+    public ResponseEntity<CuentaResponseDTO> obtener(@PathVariable Long id) {
+
+        CuentaResponseDTO response = cuentaService.obtenerPorId(id);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Actualizar cuenta")
     @PutMapping("/{id}")
-    public ResponseEntity<CuentaResponseDTO> actualizarCuenta(
+    public ResponseEntity<CuentaResponseDTO> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody CuentaRequestDTO request) {
 
-        return ResponseEntity.ok(cuentaService.actualizar(id, request));
-    }
-
-    @GetMapping("/ping")
-    public String ping() {
-        return "Cuenta-service activo";
+        CuentaResponseDTO response = cuentaService.actualizar(id, request);
+        return ResponseEntity.ok(response);
     }
 }

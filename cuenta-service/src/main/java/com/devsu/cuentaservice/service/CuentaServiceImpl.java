@@ -21,26 +21,15 @@ public class CuentaServiceImpl implements CuentaService {
     private final ClienteRefRepository clienteRefRepository;
     private final CuentaMapper cuentaMapper;
 
-
     @Override
     public CuentaResponseDTO crear(CuentaRequestDTO request) {
 
-        if (!clienteRefRepository.existsById(request.getClienteId())) {
-            throw new BusinessException("Cliente no existe", HttpStatus.NOT_FOUND);
-        }
+        validarClienteExiste(request.getClienteId());
+        validarNumeroCuentaUnico(request.getNumeroCuenta());
 
-        // Validar duplicado
-        if (cuentaRepository.existsByNumeroCuenta(request.getNumeroCuenta())) {
-            throw new BusinessException("Ya existe una cuenta con ese número", HttpStatus.CONFLICT);
-        }
-
-        // Mapear DTO → Entity
         Cuenta cuenta = cuentaMapper.toEntity(request);
-
-        // Guardar
         Cuenta saved = cuentaRepository.save(cuenta);
 
-        // Mapear Entity → DTO
         return cuentaMapper.toResponseDTO(saved);
     }
 
@@ -54,37 +43,55 @@ public class CuentaServiceImpl implements CuentaService {
 
     @Override
     public CuentaResponseDTO obtenerPorId(Long id) {
-        Cuenta cuenta = cuentaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
-
+        Cuenta cuenta = obtenerCuentaPorId(id);
         return cuentaMapper.toResponseDTO(cuenta);
     }
 
     @Override
     public CuentaResponseDTO actualizar(Long id, CuentaRequestDTO request) {
 
-        Cuenta cuenta = cuentaRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
+        Cuenta cuenta = obtenerCuentaPorId(id);
 
-        if (!clienteRefRepository.existsById(request.getClienteId())) {
+        validarClienteExiste(request.getClienteId());
+        validarNumeroCuentaUnicoEnActualizacion(cuenta, request.getNumeroCuenta());
+
+        actualizarDatosCuenta(cuenta, request);
+
+        Cuenta updated = cuentaRepository.save(cuenta);
+
+        return cuentaMapper.toResponseDTO(updated);
+    }
+
+    private Cuenta obtenerCuentaPorId(Long id) {
+        return cuentaRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Cuenta no encontrada", HttpStatus.NOT_FOUND));
+    }
+
+    private void validarClienteExiste(Long clienteId) {
+        if (!clienteRefRepository.existsById(clienteId)) {
             throw new BusinessException("Cliente no existe", HttpStatus.NOT_FOUND);
         }
+    }
 
-        // Validar cambio de número de cuenta
-        if (!cuenta.getNumeroCuenta().equals(request.getNumeroCuenta()) &&
-                cuentaRepository.existsByNumeroCuenta(request.getNumeroCuenta())) {
+    private void validarNumeroCuentaUnico(String numeroCuenta) {
+        if (cuentaRepository.existsByNumeroCuenta(numeroCuenta)) {
             throw new BusinessException("Ya existe una cuenta con ese número", HttpStatus.CONFLICT);
         }
+    }
 
-        // Actualizar campos (NO reemplazar entidad completa)
+    private void validarNumeroCuentaUnicoEnActualizacion(Cuenta cuenta, String numeroCuenta) {
+        boolean cambiaNumero = !cuenta.getNumeroCuenta().equals(numeroCuenta);
+
+        if (cambiaNumero && cuentaRepository.existsByNumeroCuenta(numeroCuenta)) {
+            throw new BusinessException("Ya existe una cuenta con ese número", HttpStatus.CONFLICT);
+        }
+    }
+
+    private void actualizarDatosCuenta(Cuenta cuenta, CuentaRequestDTO request) {
         cuenta.setNumeroCuenta(request.getNumeroCuenta());
         cuenta.setTipoCuenta(request.getTipoCuenta());
         cuenta.setSaldoInicial(request.getSaldoInicial());
         cuenta.setEstado(request.getEstado());
         cuenta.setClienteId(request.getClienteId());
-
-        Cuenta updated = cuentaRepository.save(cuenta);
-
-        return cuentaMapper.toResponseDTO(updated);
     }
 }
