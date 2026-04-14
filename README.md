@@ -81,8 +81,10 @@ Tablas: - clientes - cliente_ref - cuenta - movimientos
 
 ## Ejecución
 
+Para levantar todos los servicios (RabbitMQ, MySQL y microservicios):
+
 ``` bash
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 ------------------------------------------------------------------------
