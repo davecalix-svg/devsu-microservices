@@ -11,7 +11,7 @@ cuentas, movimientos y reportes.
 
 ``` mermaid
 flowchart LR
-    User[Usuario / Cliente]
+    User[Cliente]
     ClienteService[cliente-service]
     CuentaService[cuenta-service]
     DB[(MySQL)]
