@@ -9,15 +9,14 @@ cuentas, movimientos y reportes.
 
 ## Arquitectura del Sistema
 
+``` mermaid
 flowchart LR
-    User[👤 Cliente]
-    ClienteService[🟦 cliente-service]
-    CuentaService[🟩 cuenta-service]
-
-    DB[(🗄️ MySQL)]
-    RabbitMQ[📨 RabbitMQ]
-
-    ClienteRef[(📄 cliente_ref)]
+    User[Usuario / Cliente]
+    ClienteService[cliente-service]
+    CuentaService[cuenta-service]
+    DB[(MySQL)]
+    RabbitMQ[RabbitMQ]
+    ClienteRef[(cliente_ref)]
 
     User -->|HTTP| ClienteService
     User -->|HTTP| CuentaService
@@ -25,16 +24,12 @@ flowchart LR
     ClienteService -->|JPA| DB
     ClienteService -->|Evento| RabbitMQ
 
-    RabbitMQ -->|Evento| CuentaService
-
+    RabbitMQ --> CuentaService
     CuentaService --> ClienteRef
     CuentaService --> DB
 
     CuentaService -->|WebFlux| ClienteService
-
-    %% estilos
-    style RabbitMQ fill:#ffe4b5,stroke:#ff8c00,stroke-width:2px
-    style DB fill:#e0f7fa,stroke:#00796b,stroke-width:2px
+```
 
 ------------------------------------------------------------------------
 
